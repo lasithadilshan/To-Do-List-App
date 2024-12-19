@@ -1,44 +1,63 @@
 import streamlit as st
 import pandas as pd
 
-# Set page title
-st.title("To-Do List App")
+# Set page title and layout
+st.set_page_config(page_title="To-Do List App", layout="centered")
+st.title("✅ To-Do List App")
 
-# Load existing tasks or initialize an empty list
+# Initialize tasks in session state
 if "tasks" not in st.session_state:
-    st.session_state["tasks"] = []
+    st.session_state["tasks"] = []  # List to store tasks
 
-# Input for adding a new task
-new_task = st.text_input("Add a new task", key="new_task_input")
-
-# Add task button
-if st.button("Add Task"):
-    if new_task.strip() != "":
-        st.session_state["tasks"].append({"Task": new_task, "Completed": False})
+# Function to add a task
+def add_task(task):
+    if task.strip():  # Ensure task is not empty
+        st.session_state["tasks"].append({"Task": task, "Completed": False})
         st.success("Task added!")
     else:
-        st.warning("Task cannot be empty.")
+        st.warning("Task cannot be empty. Please enter a valid task.")
 
-# Display tasks in a table
+# Function to mark a task as complete
+def complete_task(index):
+    st.session_state["tasks"][index]["Completed"] = True
+    st.success(f"Task '{st.session_state['tasks'][index]['Task']}' marked as completed!")
+
+# Function to delete a task
+def delete_task(index):
+    task_name = st.session_state["tasks"][index]["Task"]
+    st.session_state["tasks"].pop(index)
+    st.success(f"Task '{task_name}' deleted!")
+
+# Input field to add a new task
+with st.form("task_form", clear_on_submit=True):
+    new_task = st.text_input("Add a new task", placeholder="Enter your task here...")
+    submitted = st.form_submit_button("Add Task")
+    if submitted:
+        add_task(new_task)
+
+# Display tasks if available
 if st.session_state["tasks"]:
     st.subheader("Your Tasks")
+
+    # Convert tasks to DataFrame for visualization
     tasks_df = pd.DataFrame(st.session_state["tasks"])
     for i, task in enumerate(st.session_state["tasks"]):
-        col1, col2 = st.columns([4, 1])
+        col1, col2, col3 = st.columns([6, 2, 2])  # Layout for task, complete, and delete buttons
         with col1:
             if task["Completed"]:
-                st.write(f"~~{task['Task']}~~")
+                st.markdown(f"~~{task['Task']}~~")  # Strike-through for completed tasks
             else:
-                st.write(task["Task"])
+                st.markdown(task["Task"])
         with col2:
-            if st.button("✅", key=f"complete_{i}"):
-                st.session_state["tasks"][i]["Completed"] = True
-            if st.button("❌", key=f"delete_{i}"):
-                st.session_state["tasks"].pop(i)
-                st.experimental_rerun()
+            if not task["Completed"] and st.button("✅ Complete", key=f"complete_{i}"):
+                complete_task(i)
+        with col3:
+            if st.button("❌ Delete", key=f"delete_{i}"):
+                delete_task(i)
+                st.experimental_rerun()  # Rerun app to refresh task list
 else:
     st.info("No tasks yet. Add a task to get started!")
 
 # Footer
 st.write("---")
-st.write("💡 Use this app to manage your daily tasks.")
+st.caption("Made with ❤️ using Streamlit")
