@@ -1,17 +1,17 @@
 import streamlit as st
 import pandas as pd
 
-# Set page title and layout
+# Set page configuration
 st.set_page_config(page_title="To-Do List App", layout="centered")
 st.title("✅ To-Do List App")
 
-# Initialize tasks in session state
+# Initialize session state for tasks
 if "tasks" not in st.session_state:
-    st.session_state["tasks"] = []  # List to store tasks
+    st.session_state["tasks"] = []  # Initialize tasks as an empty list
 
-# Function to add a task
+# Function to add a new task
 def add_task(task):
-    if task.strip():  # Ensure task is not empty
+    if task.strip():  # Check for non-empty task
         st.session_state["tasks"].append({"Task": task, "Completed": False})
         st.success("Task added!")
     else:
@@ -25,24 +25,22 @@ def complete_task(index):
 # Function to delete a task
 def delete_task(index):
     task_name = st.session_state["tasks"][index]["Task"]
-    st.session_state["tasks"].pop(index)
+    del st.session_state["tasks"][index]  # Delete task from session state
     st.success(f"Task '{task_name}' deleted!")
+    st.experimental_rerun()  # Refresh app after task deletion
 
-# Input field to add a new task
+# Input form for adding tasks
 with st.form("task_form", clear_on_submit=True):
     new_task = st.text_input("Add a new task", placeholder="Enter your task here...")
     submitted = st.form_submit_button("Add Task")
     if submitted:
         add_task(new_task)
 
-# Display tasks if available
+# Display tasks
 if st.session_state["tasks"]:
     st.subheader("Your Tasks")
-
-    # Convert tasks to DataFrame for visualization
-    tasks_df = pd.DataFrame(st.session_state["tasks"])
     for i, task in enumerate(st.session_state["tasks"]):
-        col1, col2, col3 = st.columns([6, 2, 2])  # Layout for task, complete, and delete buttons
+        col1, col2, col3 = st.columns([6, 2, 2])  # Define layout for task display
         with col1:
             if task["Completed"]:
                 st.markdown(f"~~{task['Task']}~~")  # Strike-through for completed tasks
@@ -53,8 +51,7 @@ if st.session_state["tasks"]:
                 complete_task(i)
         with col3:
             if st.button("❌ Delete", key=f"delete_{i}"):
-                delete_task(i)
-                st.experimental_rerun()  # Rerun app to refresh task list
+                delete_task(i)  # Delete task and refresh app
 else:
     st.info("No tasks yet. Add a task to get started!")
 
