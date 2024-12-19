@@ -59,3 +59,4 @@ else:
 # Footer
 st.write("---")
 st.caption("Made with ❤️ using Streamlit")
+st.caption("Developer : Lasitha Dilshan Thilakarathna")
