@@ -27,7 +27,8 @@ def delete_task(index):
     task_name = st.session_state["tasks"][index]["Task"]
     del st.session_state["tasks"][index]  # Delete task from session state
     st.success(f"Task '{task_name}' deleted!")
-    st.experimental_rerun()  # Refresh app after task deletion
+    # Instead of rerun, we use a dummy update to refresh the app
+    st.session_state["tasks"] = st.session_state["tasks"]  # Trigger state update
 
 # Input form for adding tasks
 with st.form("task_form", clear_on_submit=True):
@@ -51,7 +52,7 @@ if st.session_state["tasks"]:
                 complete_task(i)
         with col3:
             if st.button("❌ Delete", key=f"delete_{i}"):
-                delete_task(i)  # Delete task and refresh app
+                delete_task(i)  # Delete task and update state
 else:
     st.info("No tasks yet. Add a task to get started!")
 
