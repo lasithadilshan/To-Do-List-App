@@ -81,13 +81,3 @@ If you would like to contribute to the project, feel free to fork the repository
 ## License
 
 This project is open-source and available under the [MIT License](LICENSE).
-
----
-
-### Notes:
-
-- Replace `"https://github.com/lasithadilshan/to-do-list-app.git"` with the actual URL of your GitHub repository.
-- If you have other dependencies in the app, don't forget to add them to `requirements.txt`.
-- The instructions above assume that your project is structured as described. If your folder structure differs, adjust the commands accordingly.
-
-Let me know if you need any other changes!
